@@ -60,7 +60,7 @@ pytest tests/ -v -m "not docker"
 ```
 
 **Kết quả mong đợi: hầu hết test RỚT.** Đó là đúng — bạn chưa viết code nào.
-Điều cần xác nhận là pytest *chạy được* và bạn *đọc được* thông báo lỗi. Nếu
+Điều cần xác nhận là pytest _chạy được_ và bạn _đọc được_ thông báo lỗi. Nếu
 thấy `ModuleNotFoundError` hoặc `ImportError`, môi trường chưa cài xong.
 
 ---
@@ -77,8 +77,8 @@ app.run(port=8000, debug=True)      # cloud gán cổng khác; debug=True lộ s
 print(f"client {cid} gửi {message}") # log không lọc được, không cảnh báo được
 ```
 
-**12-Factor App** trả lời bằng một nguyên tắc: *code là thứ giống nhau ở mọi
-môi trường, config là thứ khác nhau — nên config phải nằm ngoài code.*
+**12-Factor App** trả lời bằng một nguyên tắc: _code là thứ giống nhau ở mọi
+môi trường, config là thứ khác nhau — nên config phải nằm ngoài code._
 Cùng một image chạy ở laptop, staging và production, chỉ khác biến môi trường.
 
 ### Việc cần làm
@@ -105,7 +105,13 @@ pydantic-settings tự ánh xạ tên trường sang biến môi trường viế
 Cài `emit()` sao cho mỗi lần gọi in ra **một dòng JSON**:
 
 ```json
-{"event": "chat_completed", "severity": "INFO", "ts": "2026-08-01T14:30:00+00:00", "client_id": "sv01", "usd_cost": 0.0001}
+{
+  "event": "chat_completed",
+  "severity": "INFO",
+  "ts": "2026-08-01T14:30:00+00:00",
+  "client_id": "sv01",
+  "usd_cost": 0.0001
+}
 ```
 
 Một dòng — không `indent`. Cloud gom log theo dòng; JSON xuống dòng là một log
@@ -116,7 +122,7 @@ Logging đọc để lọc theo mức độ. Log platform nào cũng có một q
 tương tự — dùng đúng quy ước thì được cả hệ sinh thái công cụ hỗ trợ miễn phí.
 
 Có định dạng này rồi thì bạn hỏi được những câu mà `print()` không trả lời nổi:
-*"client nào tiêu nhiều tiền nhất hôm nay?"*, *"tỷ lệ lỗi 5 phút qua là bao nhiêu?"*
+_"client nào tiêu nhiều tiền nhất hôm nay?"_, _"tỷ lệ lỗi 5 phút qua là bao nhiêu?"_
 
 #### 1.3 — `/healthz` trong `app/main.py`
 
@@ -167,7 +173,7 @@ pytest tests/test_cp1.py -v
 ### Vấn đề
 
 "Máy tôi chạy được" — vì máy bạn có Python 3.11, máy server có 3.9; máy bạn có
-`libpq`, server không. Docker đóng gói *cả môi trường* vào một image: cùng một
+`libpq`, server không. Docker đóng gói _cả môi trường_ vào một image: cùng một
 image thì chạy giống nhau ở mọi nơi.
 
 Nhưng image sai cách cũng gây họa: image 1.8GB làm deploy chậm 5 phút mỗi lần;
@@ -237,8 +243,8 @@ có healthcheck, và:
 
 ```yaml
 environment:
-  API_TOKEN: ${API_TOKEN}              # đọc từ .env, KHÔNG viết thẳng token
-  REDIS_URL: redis://redis:6379/0      # `redis` là tên service = hostname
+  API_TOKEN: ${API_TOKEN} # đọc từ .env, KHÔNG viết thẳng token
+  REDIS_URL: redis://redis:6379/0 # `redis` là tên service = hostname
 ```
 
 `localhost` bên trong container là chính container đó, không phải máy bạn —
@@ -292,11 +298,11 @@ của người lạ là một lần bạn trả tiền cho nhà cung cấp LLM.
 
 Ba lớp, ba câu hỏi khác nhau:
 
-| Lớp | Câu hỏi | Mã lỗi |
-|-----|---------|--------|
-| Authentication | Bạn là ai? | 401 |
-| Token bucket | Bạn gọi có quá nhanh không? | 429 |
-| Cost guard | Bạn đã tiêu hết ngân sách hôm nay chưa? | 402 |
+| Lớp            | Câu hỏi                                 | Mã lỗi |
+| -------------- | --------------------------------------- | ------ |
+| Authentication | Bạn là ai?                              | 401    |
+| Token bucket   | Bạn gọi có quá nhanh không?             | 429    |
+| Cost guard     | Bạn đã tiêu hết ngân sách hôm nay chưa? | 402    |
 
 ### Việc cần làm
 
@@ -342,6 +348,7 @@ lúc) mà vẫn chặn được kẻ gọi liên tục không nghỉ. Đây là 
 mặc định ở hầu hết API gateway.
 
 Hai chi tiết dễ sai:
+
 - **Chặn trên ở `capacity`.** Thiếu `min(...)` thì client im lặng một ngày sẽ
   tích được 14.400 token và bắn hết trong một giây.
 - **Ghi lại cả `ts`.** Quên cập nhật mốc thời gian thì lần sau bạn tính phần
@@ -438,6 +445,7 @@ nhắn 2 vào container B. Nếu lịch sử nằm trong RAM của A thì B khô
 service "mất trí nhớ" ngẫu nhiên. Đó là lý do stateless không phải tùy chọn.
 
 Hai chi tiết bắt buộc:
+
 - `ltrim` giữ tối đa `HISTORY_MAX_MESSAGES` message gần nhất — prompt dài vô hạn
   = tiền token vô hạn
 - `expire` để hội thoại cũ tự hết hạn — không thì Redis đầy dần đến khi sập
@@ -455,11 +463,11 @@ Redis chết  →  503 {"status": "not ready", "redis": false}
 
 Khác `/healthz` ở đúng một điểm cốt lõi:
 
-| | `/healthz` (liveness) | `/readyz` (readiness) |
-|---|---|---|
-| Câu hỏi | Process còn sống không? | Nhận traffic được chưa? |
-| Kiểm tra dependency | **Không** | **Có** |
-| Trả 503 thì sao | Orchestrator **restart** container | LB **ngừng gửi** request, không restart |
+|                     | `/healthz` (liveness)              | `/readyz` (readiness)                   |
+| ------------------- | ---------------------------------- | --------------------------------------- |
+| Câu hỏi             | Process còn sống không?            | Nhận traffic được chưa?                 |
+| Kiểm tra dependency | **Không**                          | **Có**                                  |
+| Trả 503 thì sao     | Orchestrator **restart** container | LB **ngừng gửi** request, không restart |
 
 Gộp hai cái làm một là lỗi kinh điển: Redis mất kết nối 30 giây → cả 3 container
 đều báo unhealthy → orchestrator restart cả 3 cùng lúc → khi Redis quay lại thì
@@ -537,11 +545,11 @@ pytest tests/test_cp4.py -v
 
 ### Chọn platform
 
-| Platform | Độ khó | Free tier | Redis kèm theo |
-|----------|--------|-----------|----------------|
-| **Railway** | ⭐ | $5 credit dùng thử | Có, thêm 1 click |
-| **Render** | ⭐⭐ | 750 giờ/tháng | Có (Key Value) |
-| Cloud Run | ⭐⭐⭐ | 2 triệu request/tháng | Không — cần Memorystore/Upstash |
+| Platform    | Độ khó | Free tier             | Redis kèm theo                  |
+| ----------- | ------ | --------------------- | ------------------------------- |
+| **Railway** | ⭐     | $5 credit dùng thử    | Có, thêm 1 click                |
+| **Render**  | ⭐⭐   | 750 giờ/tháng         | Có (Key Value)                  |
+| Cloud Run   | ⭐⭐⭐ | 2 triệu request/tháng | Không — cần Memorystore/Upstash |
 
 Chọn Railway nếu bạn muốn xong nhanh. Cả hai đều đọc `Dockerfile` bạn vừa viết.
 
@@ -675,11 +683,11 @@ chạy test, build image, và **chỉ khi tất cả xanh** mới deploy. Mọi 
 
 Đặt file YAML vào `.github/workflows/`, GitHub tự đọc và chạy. Ba khái niệm:
 
-| Khái niệm | Là gì |
-|-----------|-------|
-| **workflow** | một file YAML, kích hoạt bởi một sự kiện (`on:`) |
-| **job** | một nhóm bước chạy trên một máy ảo riêng; các job mặc định chạy **song song** |
-| **step** | một lệnh (`run:`) hoặc một action dùng lại của người khác (`uses:`) |
+| Khái niệm    | Là gì                                                                         |
+| ------------ | ----------------------------------------------------------------------------- |
+| **workflow** | một file YAML, kích hoạt bởi một sự kiện (`on:`)                              |
+| **job**      | một nhóm bước chạy trên một máy ảo riêng; các job mặc định chạy **song song** |
+| **step**     | một lệnh (`run:`) hoặc một action dùng lại của người khác (`uses:`)           |
 
 Điểm hay bị hiểu nhầm: job chạy song song, nên `deploy` sẽ chạy **cùng lúc** với
 `test` nếu bạn không nói gì. `needs:` là thứ xâu chúng lại thành dây chuyền.
@@ -814,7 +822,7 @@ pytest tests/test_bonus_cicd.py -v
 - `workflow chưa khai báo on:` mà bạn thấy rõ có `on:` — YAML hiểu `on` là giá
   trị boolean `true`. Bộ test đã xử lý trường hợp này; nếu vẫn rớt thì kiểm tra
   thụt lề của khối `on:`.
-- Job test đỏ với `ValidationError: agent_api_key Field required` — chưa truyền
+- Job test đỏ với `ValidationError: api_token Field required` — chưa truyền
   `API_TOKEN` qua khối `env:`
 - Job test chạy rất lâu rồi timeout — bạn đang chạy cả `test_cp5.py`
 - `test_badge_bao_passing` rớt với HTTP 404 — repo đang private, hoặc tên file
@@ -849,23 +857,24 @@ Nộp **link repository** lên LMS. Đối chiếu lại [danh sách kiểm tra]
 
 ## Phụ Lục A — Lỗi Thường Gặp
 
-| Triệu chứng | Nguyên nhân thường gặp | Cách xử lý |
-|-------------|------------------------|------------|
-| `ValidationError: api_token Field required` | chưa có `.env` hoặc thiếu biến | `cp .env.example .env` rồi điền token |
-| `ConnectionError: Error 61 connecting to localhost:6379` | Redis chưa chạy | `docker compose up -d redis` hoặc `REDIS_URL=fake://` |
-| `ModuleNotFoundError: No module named 'app'` | chạy pytest từ thư mục con | chạy từ gốc repo |
-| `curl: (7) Failed to connect` | uvicorn bind `127.0.0.1` trong container | đổi sang `--host 0.0.0.0` |
-| Container start rồi tắt ngay | thiếu biến môi trường | `docker compose logs chat` |
-| `docker build` không dùng cache | `COPY . .` đứng trước `pip install` | đảo thứ tự |
-| Image > 400MB | build 1 stage, hoặc base image không slim | multi-stage + `python:3.11-slim` |
-| 429 ngay từ request đầu | xô khởi tạo rỗng thay vì đầy | client mới → trả `float(capacity)` |
-| Xô không bao giờ cạn | quên cập nhật `ts` khi `hset` | ghi cả `tokens` và `ts` |
-| `/readyz` luôn 200 dù Redis chết | không dùng kết quả `ping()` | `if not store.ping(): return 503` |
-| Deploy xong health check fail | app không đọc `$PORT` | `--port ${PORT:-8000}` |
+| Triệu chứng                                              | Nguyên nhân thường gặp                    | Cách xử lý                                            |
+| -------------------------------------------------------- | ----------------------------------------- | ----------------------------------------------------- |
+| `ValidationError: api_token Field required`              | chưa có `.env` hoặc thiếu biến            | `cp .env.example .env` rồi điền token                 |
+| `ConnectionError: Error 61 connecting to localhost:6379` | Redis chưa chạy                           | `docker compose up -d redis` hoặc `REDIS_URL=fake://` |
+| `ModuleNotFoundError: No module named 'app'`             | chạy pytest từ thư mục con                | chạy từ gốc repo                                      |
+| `curl: (7) Failed to connect`                            | uvicorn bind `127.0.0.1` trong container  | đổi sang `--host 0.0.0.0`                             |
+| Container start rồi tắt ngay                             | thiếu biến môi trường                     | `docker compose logs chat`                            |
+| `docker build` không dùng cache                          | `COPY . .` đứng trước `pip install`       | đảo thứ tự                                            |
+| Image > 400MB                                            | build 1 stage, hoặc base image không slim | multi-stage + `python:3.11-slim`                      |
+| 429 ngay từ request đầu                                  | xô khởi tạo rỗng thay vì đầy              | client mới → trả `float(capacity)`                    |
+| Xô không bao giờ cạn                                     | quên cập nhật `ts` khi `hset`             | ghi cả `tokens` và `ts`                               |
+| `/readyz` luôn 200 dù Redis chết                         | không dùng kết quả `ping()`               | `if not store.ping(): return 503`                     |
+| Deploy xong health check fail                            | app không đọc `$PORT`                     | `--port ${PORT:-8000}`                                |
 
 ## Phụ Lục B — Bảng Tra Nhanh
 
 **pytest**
+
 ```bash
 pytest tests/test_cp3.py -v            # một checkpoint
 pytest tests/ -v -m "not docker"       # bỏ qua test build (nhanh hơn nhiều)
@@ -874,6 +883,7 @@ pytest tests/test_cp3.py -k bucket     # chỉ chạy test có "bucket" trong t�
 ```
 
 **Docker**
+
 ```bash
 docker build -t day12-chat:prod .
 docker images day12-chat:prod                  # xem dung lượng
@@ -884,6 +894,7 @@ docker compose down -v                         # dọn sạch, xóa cả volume
 ```
 
 **Redis**
+
 ```bash
 docker compose exec redis redis-cli KEYS '*'
 docker compose exec redis redis-cli LRANGE chat:sv01 0 -1
@@ -893,11 +904,11 @@ docker compose exec redis redis-cli HGETALL bucket:sv01
 
 **Mã trạng thái HTTP dùng trong lab**
 
-| Mã | Ý nghĩa | Xuất hiện khi |
-|----|---------|---------------|
-| 200 | OK | mọi thứ ổn |
-| 401 | Unauthorized | thiếu/sai Bearer token |
-| 402 | Payment Required | hết ngân sách ngày |
+| Mã  | Ý nghĩa              | Xuất hiện khi                     |
+| --- | -------------------- | --------------------------------- |
+| 200 | OK                   | mọi thứ ổn                        |
+| 401 | Unauthorized         | thiếu/sai Bearer token            |
+| 402 | Payment Required     | hết ngân sách ngày                |
 | 422 | Unprocessable Entity | body sai định dạng (pydantic bắt) |
-| 429 | Too Many Requests | xô hết token |
-| 503 | Service Unavailable | chưa ready, hoặc đang tắt dần |
+| 429 | Too Many Requests    | xô hết token                      |
+| 503 | Service Unavailable  | chưa ready, hoặc đang tắt dần     |
